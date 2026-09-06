@@ -12,13 +12,25 @@ Welcome to my Smart Contract Security Audit Portfolio. This repository showcases
 
 | Protocol | Date | Scope | Findings Summary | Report PDF | Report MD |
 | :--- | :---: | :--- | :---: | :---: | :---: |
+| **Puppy Raffle** | Sep 2026 | `PuppyRaffle.sol` (143 nSLOC) | **5 High, 3 Med, 2 Low, 1 Gas, 2 Info** | [📄 Download PDF](./reports/PuppyRaffle-Security-Audit-Report.pdf) | [📝 Read Markdown](./reports/PuppyRaffle-Security-Audit-Report.md) |
 | **PasswordStore** | Sep 2026 | `PasswordStore.sol` (25 nSLOC) | **2 High, 1 Gas, 3 Info** | [📄 Download PDF](./reports/PasswordStore-Security-Audit-Report.pdf) | [📝 Read Markdown](./reports/PasswordStore-Security-Audit-Report.md) |
 
 ---
 
 ## 🔍 Featured Audit Highlights
 
-### 1. [PasswordStore Protocol Audit](./reports/PasswordStore-Security-Audit-Report.pdf)
+### 1. [Puppy Raffle Protocol Audit](./reports/PuppyRaffle-Security-Audit-Report.pdf)
+- **Target:** On-chain lottery and NFT reward distribution protocol on EVM.
+- **Key Vulnerabilities Identified:**
+  - **[H-01] State Update After External Call in `refund` Enables Reentrancy:** Exploited CEI violation to drain all contract deposits recursively.
+  - **[H-02] Predictable Pseudo-Randomness in `selectWinner`:** Demonstrated simulation of `block.timestamp` and `block.difficulty` to manipulate winner selection and NFT rarity tiers.
+  - **[H-03] Integer Truncation & Overflow in `totalFees`:** Uncovered `uint64(fee)` bit truncation above ~18.44 ETH, permanently corrupting fee accounting and locking protocol funds.
+  - **[H-04] Strict Contract Balance Equality Check in `withdrawFees`:** Demonstrated permanent DoS via `selfdestruct` force-feeding.
+  - **[H-05] Unbounded Loop for Duplicate Player Checks in `enterRaffle`:** Proved quadratic gas scaling ($O(n^2)$) causing Denial of Service via block gas limit exhaustion.
+  - **[M-01 - M-03] Push Payment Freezes, Index 0 Ambiguity, & CEI Violations:** Identified contract-bricking push payments and state inconsistencies during NFT minting callbacks.
+- **Verification:** 100% test pass rate on Foundry with custom reentrancy, overflow, and gas exhaustion exploit contracts.
+
+### 2. [PasswordStore Protocol Audit](./reports/PasswordStore-Security-Audit-Report.pdf)
 - **Target:** Personal private password vault protocol on EVM.
 - **Key Vulnerabilities Identified:**
   - **[H-01] Storing Plaintext Password in On-Chain Storage Violates Confidentiality:** Demonstrated extraction of private variables directly from EVM storage slot 1 using `vm.load` and `cast storage`.
